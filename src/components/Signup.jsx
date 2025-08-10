@@ -17,25 +17,32 @@ function Signup() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setMessage("password did not match");
-      return;
-    }
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/Signup", {
-        username: formData.username,
-        password: formData.password,
-      });
-      setMessage("registration successful");
-      console.log(res.data);
-        navigate("/dashboard");
-    } catch (err) {
-      setMessage("Registration failed");
-      console.log(err);
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (formData.password !== formData.confirmPassword) {
+    setMessage("password did not match");
+    return;
+  }
+  try {
+    const res = await axios.post("http://localhost:5000/api/auth/Signup", {
+      username: formData.username,
+      password: formData.password,
+    });
+
+    // Save token and user
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+
+    setMessage("registration successful");
+    console.log(res.data);
+
+    navigate("/dashboard"); // now you stay logged in
+  } catch (err) {
+    setMessage("Registration failed");
+    console.log(err);
+  }
+};
+
 
   const handleGoogleSignUp = async () => {
     try {

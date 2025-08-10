@@ -15,13 +15,19 @@ const DB_PATH = process.env.MONGO_URI;
 
 // Middlewares
 app.use(cors({
-  origin: 'http://localhost:5173'
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
+const privateRoute = require('./routes/privateRoutes');
+app.use('/api', privateRoute);
 // ✅ LeetCode Proxy Route (Axios-based)
 app.post("/api/leetcode", async (req, res) => {
   try {
