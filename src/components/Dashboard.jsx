@@ -3,6 +3,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import axios from "axios";
 import {
   PieChart,
   Pie,
@@ -88,31 +89,29 @@ function Dashboard() {
     };
   }, [navigate]);
 
-  // Function to fetch user profile from MongoDB
+  // Function to fetch user profile from MongoDB using axios
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await fetch('/api/profile', {
+      const response = await axios.get('http://localhost:5000/api/auth/profile', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
-      if (response.ok) {
-        const userData = await response.json();
-        setLeetcodeHandle(userData.leetcode || "");
-        setGfgHandle(userData.gfg || "");
-        setProfilePicture(userData.profilePicture || "");
-        
-        if (userData.leetcode && userData.gfg) {
-          setHandlesSaved(true);
-        }
+      const userData = response.data;
+      setLeetcodeHandle(userData.leetcode || "");
+      setGfgHandle(userData.gfg || "");
+      setProfilePicture(userData.profilePicture || "");
+      
+      if (userData.leetcode && userData.gfg) {
+        setHandlesSaved(true);
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('Error fetching profile:', error.response?.data?.message || error.message);
     }
   };
 
@@ -196,36 +195,31 @@ function Dashboard() {
 
     const token = localStorage.getItem("token");
 
-    // If JWT token exists, save to MongoDB
+    // If JWT token exists, save to MongoDB using axios
     if (token) {
       try {
-        const response = await fetch('/api/profile', {
-          method: 'PUT',
+        const response = await axios.put('http://localhost:5000/api/auth/profile', {
+          leetcode: leetcodeHandle,
+          gfg: gfgHandle,
+          profilePicture: profilePicture
+        }, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            leetcode: leetcodeHandle,
-            gfg: gfgHandle,
-            profilePicture: profilePicture
-          })
+          }
         });
 
-        if (response.ok) {
-          setHandlesSaved(true);
-          alert("Profile saved successfully!");
-        } else {
-          throw new Error('Failed to save profile');
-        }
+        setHandlesSaved(true);
+        alert("Profile saved successfully!");
+        return; // Exit early for JWT users
       } catch (error) {
-        console.error("Error saving profile:", error);
+        console.error("Error saving profile:", error.response?.data?.message || error.message);
         alert("Failed to save profile.");
         return;
       }
     }
 
-    // Firebase save (existing code)
+    // Firebase save (existing code) - only runs if no JWT token
     try {
       await setDoc(doc(db, "users", user.uid), {
         leetcode: leetcodeHandle,
