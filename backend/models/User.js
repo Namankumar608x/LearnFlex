@@ -5,7 +5,7 @@ const userSchema=new mongoose.Schema({
   password:{type:String,required:true},
   leetcode:{type:String},
   gfg:{type:String},
-  
+   profilePicture: { type: String }
 })
 
 module.exports=mongoose.model("User",userSchema);
