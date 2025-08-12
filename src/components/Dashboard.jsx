@@ -12,6 +12,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Search, Video } from "lucide-react";
 
 const COLORS = ["#0088FE", "#00C49F", "#FF8042", "#FFBB28", "#AA00FF"];
 
@@ -248,6 +249,11 @@ function Dashboard() {
     navigate("/login");
   };
 
+  // Navigation function for YouTube Search
+  const handleNavigateToSearch = () => {
+    navigate("/search");
+  };
+
   if (loading || !user) {
     return (
       <p className="text-center mt-20 text-gray-500">Loading dashboard...</p>
@@ -266,7 +272,7 @@ function Dashboard() {
         {/* Upload overlay icon */}
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-full transition-all mb-4">
           <svg className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0118.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </div>
@@ -285,6 +291,18 @@ function Dashboard() {
         Welcome, {user.displayName}!
       </h1>
       <p className="text-gray-600 mt-2">{user.email}</p>
+
+      {/* YouTube Search Navigation Button */}
+      <div className="mt-6">
+        <button
+          onClick={handleNavigateToSearch}
+          className="flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium shadow-lg"
+        >
+          <Video className="h-5 w-5" />
+          <Search className="h-5 w-5" />
+          Search YouTube Videos
+        </button>
+      </div>
 
       {/* Input form stays visible until handles are saved */}
       {!handlesSaved && (
